@@ -1,18 +1,25 @@
 defmodule Demo do
-  @moduledoc """
-  Documentation for Demo.
-  """
+  def child_spec(_args) do
+    Redix.child_spec({"redis://localhost:6379", name: Demo.Redis})
+  end
 
-  @doc """
-  Hello world.
+  def run(n) do
+    IO.puts("Memory before: #{memory()}")
 
-  ## Examples
+    0..n
+    |> Enum.map(fn idx-> ["SET", "key:#{idx}", "value:#{idx}"] end)
+    |> save()
 
-      iex> Demo.hello()
-      :world
+    IO.puts("Memory after: #{memory()}")
 
-  """
-  def hello do
-    :world
+    :ok
+  end
+
+  defp save(commands) do
+    Redix.noreply_pipeline(Demo.Redis, commands)
+  end
+
+  defp memory do
+    :erlang.memory() |> Keyword.get(:total)
   end
 end

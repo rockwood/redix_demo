@@ -13,12 +13,14 @@ defmodule Demo.MixProject do
 
   def application do
     [
+      mod: {Demo.Application, []},
       extra_applications: [:logger]
     ]
   end
 
   defp deps do
     [
+      {:redix, "~> 0.10.2"}
     ]
   end
 end
